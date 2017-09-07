@@ -1,0 +1,234 @@
+﻿<siee:SIEEUserControl
+    x:Class="CaptureCenter.EmailExport.EmailExportControlWPF"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:CaptureCenter.EmailExport"
+    xmlns:siee="clr-namespace:ExportExtensionCommon;assembly=ExportExtensionCommon.Base"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance local:EmailExportViewModel}"
+    d:DesignHeight="300" d:DesignWidth="300"
+    Background="Transparent"
+>
+    <UserControl.Resources>
+        <siee:BoolToRunningCursorConverter x:Key="BoolToRunningCursorConverter"/>
+        <siee:BoolToResultColorConverter x:Key="BoolToResultColorConverter"/>
+        <siee:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <siee:BoolToHiddenOrVisibleConverter x:Key="BoolToHiddenOrVisibleConverter"/>
+        <siee:BoolToReadOnlyForegroundColorConverter x:Key="BoolToReadOnlyForegroundColorConverter"/>
+        <siee:BoolToReadOnlyBackgroundColorConverter x:Key="BoolToReadOnlyBackgroundColorConverter"/>
+    </UserControl.Resources>
+
+    <TabControl
+        TabStripPlacement="Left"
+        SelectedIndex="{Binding SelectedTab}"
+        SelectionChanged="TabControl_SelectionChanged"
+        Cursor="{Binding IsRunning, Converter={StaticResource BoolToRunningCursorConverter}}"
+        x:Name="mainTabControl"
+    >
+        <TabControl.Resources>
+            <Style TargetType="{x:Type TabItem}">
+                <Setter Property="Padding" Value="10,5,5,5"/>
+            </Style>
+        </TabControl.Resources>
+        
+        <TabItem Header="Email Server"
+            x:Name="connectionTabItem"
+        >
+            <Grid ShowGridLines="False"
+                MinWidth="400" Margin="0,10,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <Label
+                    Grid.Row="0" Grid.Column="0" Margin="5"
+                    VerticalContentAlignment="Center"
+                    Content="Servername:"
+                    />
+                <TextBox
+                    Grid.Row="0" Grid.Column="1" Margin="5"
+                    VerticalContentAlignment="Center"
+                    Text="{Binding CT.Servername, UpdateSourceTrigger=PropertyChanged}"
+                    />
+
+                <Label
+                    Grid.Row="1" Grid.Column="0" Margin="5"
+                    VerticalContentAlignment="Center"
+                    Content="Portnumber:"
+                    />
+                <TextBox
+                    Grid.Row="1" Grid.Column="1" Margin="5"
+                    VerticalContentAlignment="Center"
+                    Text="{Binding CT.Portnumber, UpdateSourceTrigger=PropertyChanged}"
+                    />
+
+                <CheckBox
+                    Grid.Row="2" Grid.Column="1" Margin="5"
+                    VerticalContentAlignment="Center"
+                    Content="Use secure connection"
+                    IsChecked="{Binding CT.Secure}"
+                    />
+
+                <Label
+                    Grid.Row="3" Grid.Column="0" Margin="5"
+                    VerticalContentAlignment="Center"
+                    Content="Username:"
+                    />
+                <TextBox
+                    Grid.Row="3" Grid.Column="1" Margin="5"
+                    VerticalContentAlignment="Center"
+                    Text="{Binding CT.Username, UpdateSourceTrigger=PropertyChanged}"
+                    />
+                
+                <Label
+                    Grid.Row="4" Grid.Column="0" Margin="5"
+                    VerticalContentAlignment="Center"
+                    Content="Password:"
+                    />
+                <PasswordBox
+                    Grid.Row="4" Grid.Column="1" Margin="5"
+                    VerticalContentAlignment="Center"
+                    PasswordChanged="passwordBox_PasswordChanged"
+                    x:Name="passwordBox"
+                    />
+
+                <Label
+                    Grid.Row="5" Grid.Column="0" Margin="5"
+                    VerticalContentAlignment="Center"
+                    Content="Test address:"
+                    />
+                <TextBox
+                    Grid.Row="5" Grid.Column="1" Margin="5"
+                    VerticalContentAlignment="Center"
+                    ToolTip="Used in connection test, default = username"
+                    Text="{Binding CT.TestEmailAddress, UpdateSourceTrigger=PropertyChanged}"
+                    />
+
+                <!-- Buttons -->
+                <Button
+                    Style="{x:Null}"
+                    Grid.Row="6" Grid.ColumnSpan="2" Margin="5" 
+                    HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                    Padding="10,2,10,2" 
+                    Content="Check connection"
+                    Command="{x:Static local:EmailExportControlWPF.TestConnection}" CommandTarget="{Binding ElementName=mainTabControl}"
+                />
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Document"
+            x:Name="documentTabItem"
+            IsEnabled="{Binding DataLoaded}"
+        >
+            <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Margin="10">
+                <RadioButton 
+                    GroupName="documentname" Content="Create document name from input document name" 
+                    IsChecked="{Binding DT.UseInputFileName}"/>
+                <RadioButton
+                    GroupName="documentname" Content="Create document name from format" Margin="0,10,0,0"
+                    IsChecked="{Binding DT.UseSpecification}"/>
+                <GroupBox 
+                    Margin="0,0,0,0"  BorderThickness="0"
+                    IsEnabled="{Binding DT.UseSpecification}">
+                    <Grid MinWidth="400" ShowGridLines="False">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox 
+                            Grid.Row="0" Grid.Column="0" Margin="10,10,10,5"
+                            VerticalAlignment="Center" Padding="2" Grid.ColumnSpan="2"
+                            Text="{Binding DT.Specification, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Label 
+                            Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" 
+                            Content="Example:"/>
+                        <TextBlock 
+                            Grid.Row="2" Grid.Column="0" Margin="15,20,0,0" Padding="2" Grid.ColumnSpan="2"
+                            VerticalAlignment="Center"
+                            Text="{Binding DT.Result}"/>
+                        <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,10,0,10" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <!-- <ColumnDefinition Width="*"/> -->
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Row="0" Grid.Column="0" Margin="10, 5, 10, 5" Padding="5,1,5,1" Style="{x:Null}"
+                                Content="&lt;BATCHID>" ToolTip="Id number of the OCC batch the document is in"
+                                Click="Button_AddTokenToFile" Name="BATCHID" Tag="{Binding RelativeSource={RelativeSource Self}, Path=Name}"
+                                    />
+                            <Button Grid.Row="0" Grid.Column="1" Margin="10, 5, 10, 5" Padding="5,1,5,1" Style="{x:Null}"
+                                Content="&lt;DOCUMENTNUMBER>" ToolTip="Sequence number of the current batch"
+                                Click="Button_AddTokenToFile" Name="DOCUMENTNUMBER" Tag="{Binding RelativeSource={RelativeSource Self}, Path=Name}"
+                                    />
+                            <Button Grid.Row="0" Grid.Column="2" Margin="10, 5, 10, 5" Padding="5,1,5,1" Style="{x:Null}"
+                                Content="&lt;HOST>" ToolTip="Name of the machine initiating the entity creation"
+                                Click="Button_AddTokenToFile" Name="HOST" Tag="{Binding RelativeSource={RelativeSource Self}, Path=Name}"
+                                    />
+                            <Button Grid.Row="1" Grid.Column="0" Margin="10, 5, 10, 5" Padding="5,1,5,1" Style="{x:Null}"
+                                Content="&lt;DATE>" ToolTip="Date of entity creation"
+                                Click="Button_AddTokenToFile" Name="DATE" Tag="{Binding RelativeSource={RelativeSource Self}, Path=Name}"
+                                    />
+                            <Button Grid.Row="1" Grid.Column="1" Margin="10, 5, 10, 5" Padding="5,1,5,1" Style="{x:Null}"
+                                Content="&lt;TIME>" ToolTip="Time of entity creation"
+                                Click="Button_AddTokenToFile" Name="TIME" Tag="{Binding RelativeSource={RelativeSource Self}, Path=Name}"
+                                    />
+
+                            <Button Grid.Row="1" Grid.Column="2" Margin="10, 5, 10, 5" Padding="5,1,5,1" Style="{x:Null}"
+                                Content="&lt;UNIQUEID>" ToolTip="Unique value (on the current host)"
+                                Click="Button_AddTokenToFile" Name="UNIQUEID" Tag="{Binding RelativeSource={RelativeSource Self}, Path=Name}"
+                                    />
+
+                            <GroupBox Grid.Row="2" Grid.ColumnSpan="4" Margin="10, 5, 10, 5"
+                                Header="Add value of an entity property"
+                                >
+                                <StackPanel Orientation="Horizontal">
+                                    <ComboBox Grid.Row="2" Grid.Column="2" Margin="10,10,5,10"
+                                             MinWidth="200"
+                                             ItemsSource="{Binding DT.FieldNames}"
+                                             SelectedItem="{Binding DT.SelectedFieldName}"
+                                    />
+                                    <Button Grid.Row="2" Grid.Column="0" Margin="5,10,10,10"  Padding="5,1,5,1" Style="{x:Null}"
+                                        Content="Add" ToolTip="Add value of an entity property"
+                                        Click="Button_AddTokenToFile" Name="AddFieldToken" Tag="Add"
+                                    />
+                                </StackPanel>
+                            </GroupBox>
+                        </Grid>
+
+                    </Grid>
+                </GroupBox>
+            </StackPanel>
+        </TabItem>
+
+    </TabControl>
+    
+</siee:SIEEUserControl>
