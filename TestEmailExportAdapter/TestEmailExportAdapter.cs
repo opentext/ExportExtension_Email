@@ -63,7 +63,7 @@ namespace CaptureCenter.EmailExport
                 };
                 env.Export.ExportBatch(env.ViewModel.Settings, env.Batch);
                 
-                Assert.AreEqual(td[i].result, pdfFilename);
+                Assert.AreEqual(td[i].result + ".pdf", pdfFilename);
                 Assert.AreEqual(document, pdfFilepath);
             }
             Assert.AreEqual(doOnly, 0);
