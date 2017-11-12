@@ -47,7 +47,7 @@ namespace CaptureCenter.EmailExport
         {
             using (MailMessage mail = new MailMessage())
             {
-                SmtpClient SmtpServer = new SmtpClient(Servername);
+                SmtpClient smtpClient = new SmtpClient(Servername);
 
                 mail.From = new MailAddress(from.Trim());
                 if (to != null) foreach (string s in to) mail.To.Add(new MailAddress(s.Trim()));
@@ -63,13 +63,13 @@ namespace CaptureCenter.EmailExport
                     mail.Attachments.Add(attachment);
                 }
 
-                SmtpServer.Port = Portnumber;
-                SmtpServer.DeliveryMethod = SmtpDeliveryMethod.Network;
-                SmtpServer.EnableSsl = Secure;
-                SmtpServer.UseDefaultCredentials = false;
-                SmtpServer.Credentials = new System.Net.NetworkCredential(Username, Password);
+                smtpClient.Port = Portnumber;
+                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtpClient.EnableSsl = Secure;
+                smtpClient.UseDefaultCredentials = false;
+                smtpClient.Credentials = new System.Net.NetworkCredential(Username, Password);
 
-                SmtpServer.Send(mail);
+                smtpClient.Send(mail);
             }
         }
     }

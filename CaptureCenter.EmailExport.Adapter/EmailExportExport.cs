@@ -32,7 +32,6 @@ namespace CaptureCenter.EmailExport
 
             string username = mySettings.Username;
             string password = PasswordEncryption.Decrypt(mySettings.Password);
-
        }
 
         private List<string> parseEmailAddresses(SIEEField field)
